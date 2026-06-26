@@ -2,6 +2,24 @@
 
 A simple Retrieval-Augmented Generation (RAG) API built for an assignment. The service accepts PDF or TXT documents, indexes their content, and answers user questions with source references.
 
+## Assignment Coverage
+
+This project was built to satisfy the AI Engineer assignment requirements:
+
+- Build a simple RAG pipeline for `PDF` and `TXT` documents
+- Expose at least one endpoint that accepts a query
+- Return an answer together with supporting source chunks
+- Provide setup and usage instructions in the repository
+
+## Quick Start
+
+1. Create a virtual environment
+2. Install dependencies
+3. Copy `.env.example` to `.env`
+4. Set `GEMINI_API_KEY`
+5. Run `uvicorn app.main:app --reload`
+6. Open `http://localhost:8000/docs`
+
 ## Overview
 
 This project implements a minimal RAG pipeline with three main steps:
@@ -22,7 +40,7 @@ This project implements a minimal RAG pipeline with three main steps:
 
 - Python
 - FastAPI
-- OpenAI API
+- Gemini API
 - NumPy
 - PyMuPDF
 
@@ -68,23 +86,37 @@ rag-assignment/
 
 ## Setup
 
-1. Create a virtual environment
+1. Create and activate a virtual environment
 2. Install dependencies
 3. Copy `.env.example` to `.env`
-4. Add your OpenAI API key
-
-```bash
-pip install -r requirements.txt
-```
+4. Add your Gemini API key
 
 Recommended Python version: `3.11+`
+
+### Windows PowerShell
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+### macOS / Linux
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+```
 
 ## Environment Variables
 
 ```env
-OPENAI_API_KEY=your_api_key_here
-EMBEDDING_MODEL=text-embedding-3-small
-CHAT_MODEL=gpt-4o-mini
+GEMINI_API_KEY=your_api_key_here
+EMBEDDING_MODEL=gemini-embedding-001
+CHAT_MODEL=gemini-2.5-flash
 CHUNK_SIZE=800
 CHUNK_OVERLAP=150
 TOP_K=4
@@ -102,6 +134,12 @@ Interactive API docs:
 
 - `http://localhost:8000/docs`
 - `http://localhost:8000/redoc`
+
+## Demo Flow
+
+1. Upload a document with `POST /ingest`
+2. Ask a question with `POST /ask`
+3. Review the generated answer and returned source chunks
 
 ## API Endpoints
 
@@ -194,8 +232,15 @@ curl -X POST "http://localhost:8000/ask" \
 ## Running Tests
 
 ```bash
-pytest
+python -m pytest
 ```
+
+Current automated coverage includes:
+
+- health check
+- validation for unsupported uploads
+- validation when no documents are indexed
+- a mocked end-to-end ingest + ask flow
 
 ## Limitations
 
@@ -210,12 +255,3 @@ pytest
 - Improve chunking with token-aware splitting
 - Add tests and CI
 - Add Docker support
-
-## Submission Notes
-
-This repository is structured to satisfy the assignment requirements:
-
-- RAG pipeline for PDF/TXT documents
-- At least one query endpoint
-- Answer response with source references
-- README with setup and usage instructions

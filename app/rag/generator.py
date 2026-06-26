@@ -1,6 +1,7 @@
-from app.rag.embedder import get_openai_client
-from app.rag.prompts import SYSTEM_PROMPT, build_user_prompt
 from app.config import settings
+from app.rag.embedder import get_gemini_client
+from app.rag.prompts import SYSTEM_PROMPT, build_user_prompt
+from google.genai import types
 
 
 def generate_answer(query: str, context_chunks: list[dict]) -> str:
@@ -9,14 +10,13 @@ def generate_answer(query: str, context_chunks: list[dict]) -> str:
         for index, item in enumerate(context_chunks)
     )
 
-    client = get_openai_client()
-    response = client.chat.completions.create(
+    client = get_gemini_client()
+    response = client.models.generate_content(
         model=settings.chat_model,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": build_user_prompt(query, context)},
-        ],
-        temperature=0,
+        contents=build_user_prompt(query, context),
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+            temperature=0,
+        ),
     )
-    return response.choices[0].message.content or "No answer generated."
-
+    return response.text or "No answer generated."

@@ -3,8 +3,8 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
+tmp/
 data/uploads/*
 data/index/*
 !data/uploads/.gitkeep
 !data/index/.gitkeep
-
